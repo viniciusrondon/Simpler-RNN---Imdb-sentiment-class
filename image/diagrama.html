@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recurrent Neural Network Architecture</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* General Styles */
+        .node-circle {
+            stroke-width: 2.5;
+            stroke: #343a40; /* Dark gray */
+            fill: #ffffff;
+        }
+        .node-label {
+            font-size: 20px;
+            font-weight: 500;
+            fill: #212529;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+        .weight-label {
+            font-size: 16px;
+            font-style: italic;
+            fill: #495057;
+            text-anchor: middle;
+        }
+        .path-label {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .section-label {
+            font-size: 22px;
+            font-weight: 700;
+            text-anchor: middle;
+            fill: #6c757d;
+        }
+        .arrow {
+            stroke-width: 2;
+        }
+
+        /* Color-specific styles */
+        .feedforward-arrow { stroke: #0077b6; }
+        .feedforward-marker { fill: #0077b6; }
+        .feedforward-label { fill: #0077b6; }
+
+        .feedback-arrow { stroke: #2a9d8f; }
+        .feedback-marker { fill: #2a9d8f; }
+        .feedback-label { fill: #2a9d8f; }
+
+        .backprop-arrow { stroke: #e76f51; stroke-dasharray: 6 4; }
+        .backprop-marker { fill: #e76f51; }
+        .backprop-label { fill: #e76f51; }
+
+        .output-arrow { stroke: #8338ec; }
+        .output-marker { fill: #8338ec; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recurrent Neural Network Architecture</h1>
+        <svg viewBox="0 0 1200 750">
+            <!-- Definitions for Arrowheads -->
+            <defs>
+                <marker id="arrow-feedforward" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" class="feedforward-marker" />
+                </marker>
+                <marker id="arrow-feedback" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" class="feedback-marker" />
+                </marker>
+                <marker id="arrow-backprop" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" class="backprop-marker" />
+                </marker>
+                 <marker id="arrow-output" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" class="output-marker" />
+                </marker>
+            </defs>
+
+            <!-- Section Labels -->
+            <text x="600" y="40" class="section-label">Feedforward Pass</text>
+            <path d="M 50 60 H 1150" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="8 5"/>
+            <text x="600" y="710" class="section-label">Backpropagation of Error</text>
+            <path d="M 50 690 H 1150" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="8 5"/>
+
+            <!-- Nodes -->
+            <g id="input-layer">
+                <text x="100" y="250" class="node-label">F1</text>
+                <text x="100" y="450" class="node-label">F2</text>
+            </g>
+
+            <g id="hidden-layer">
+                <circle cx="400" cy="180" r="35" class="node-circle" />
+                <text x="400" y="180" class="node-label">h1</text>
+                <circle cx="400" cy="350" r="35" class="node-circle" />
+                <text x="400" y="350" class="node-label">h2</text>
+                <circle cx="400" cy="520" r="35" class="node-circle" />
+                <text x="400" y="520" class="node-label">h3</text>
+            </g>
+
+            <g id="output-layer">
+                <circle cx="750" cy="350" r="35" class="node-circle" />
+                <text x="750" y="350" class="node-label">h4</text>
+            </g>
+
+            <g id="final-output">
+                 <text x="1000" y="350" class="node-label" style="font-size: 28px;">ŷ</text>
+                 <text x="1000" y="450" class="node-label" style="font-size: 22px;">Loss = (y - ŷ)²</text>
+            </g>
+
+            <!-- Feedforward Arrows -->
+            <g class="feedforward-arrows">
+                <!-- Inputs to Hidden -->
+                <path id="f1-h1" d="M 130 250 H 360" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="f1-h2" d="M 130 250 Q 245 280 365 335" fill="none" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="f1-h3" d="M 130 250 Q 245 350 365 505" fill="none" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="f2-h1" d="M 130 450 Q 245 350 365 195" fill="none" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="f2-h2" d="M 130 450 Q 245 420 365 365" fill="none" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="f2-h3" d="M 130 450 H 360" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                 <!-- Weights for Inputs -->
+                <text x="250" y="235" class="weight-label">w1</text>
+                <text x="300" y="280" class="weight-label">w2</text>
+                <text x="300" y="400" class="weight-label">w3</text>
+                <text x="300" y="300" class="weight-label">w4</text>
+                <text x="300" y="430" class="weight-label">w5</text>
+                <text x="250" y="465" class="weight-label">w6</text>
+
+
+                <!-- Hidden to Output -->
+                <path id="h1-h4" d="M 435 195 Q 590 250 715 335" fill="none" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="h2-h4" d="M 435 350 H 715" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <path id="h3-h4" d="M 435 505 Q 590 450 715 365" fill="none" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                 <!-- Weights for Hidden -->
+                <text x="580" y="260" class="weight-label">w7</text>
+                <text x="580" y="335" class="weight-label">w8</text>
+                <text x="580" y="450" class="weight-label">w9</text>
+
+                <!-- Output to y-hat -->
+                <path id="h4-yhat" d="M 785 350 H 960" class="arrow feedforward-arrow" marker-end="url(#arrow-feedforward)"></path>
+                <text x="870" y="325" class="path-label feedforward-label">output</text>
+            </g>
+
+            <!-- Feedback Arrows (Recurrent Connections) -->
+            <g class="feedback-arrows">
+                <text x="480" y="100" class="path-label feedback-label">Feedback (State)</text>
+                <path id="h1-h2-feedback" d="M 415 215 C 450 250, 450 310, 415 320" fill="none" class="arrow feedback-arrow" marker-end="url(#arrow-feedback)"></path>
+                <path id="h2-h1-feedback" d="M 385 320 C 350 280, 350 220, 385 210" fill="none" class="arrow feedback-arrow" marker-end="url(#arrow-feedback)"></path>
+                <path id="h2-h3-feedback" d="M 415 385 C 450 420, 450 480, 415 490" fill="none" class="arrow feedback-arrow" marker-end="url(#arrow-feedback)"></path>
+                <path id="h3-h2-feedback" d="M 385 490 C 350 450, 350 390, 385 380" fill="none" class="arrow feedback-arrow" marker-end="url(#arrow-feedback)"></path>
+                <path id="h1-h3-feedback" d="M 435 185 C 520 250, 520 450, 435 515" fill="none" class="arrow feedback-arrow" marker-end="url(#arrow-feedback)"></path>
+                <path id="h3-h1-feedback" d="M 365 515 C 280 450, 280 250, 365 185" fill="none" class="arrow feedback-arrow" marker-end="url(#arrow-feedback)"></path>
+            </g>
+
+            <!-- Output and Loss Arrows -->
+            <g class="output-arrows">
+                <path id="yhat-loss" d="M 1000 380 V 420" class="arrow output-arrow" marker-end="url(#arrow-output)"></path>
+            </g>
+
+            <!-- Backpropagation Arrows -->
+            <g class="backprop-arrows">
+                <path id="loss-h4-backprop" d="M 960 460 Q 850 480 775 375" fill="none" class="arrow backprop-arrow" marker-end="url(#arrow-backprop)"></path>
+                <text x="880" y="480" class="path-label backprop-label">∂L/∂ŷ</text>
+
+                <path id="h4-h-backprop" d="M 720 320 Q 550 200 435 185" fill="none" class="arrow backprop-arrow" marker-end="url(#arrow-backprop)"></path>
+                <path id="h4-h-backprop2" d="M 715 340 H 435" fill="none" class="arrow backprop-arrow" marker-end="url(#arrow-backprop)"></path>
+                <path id="h4-h-backprop3" d="M 720 380 Q 550 500 435 515" fill="none" class="arrow backprop-arrow" marker-end="url(#arrow-backprop)"></path>
+                <text x="580" y="600" class="path-label backprop-label">Gradients (∂L/∂w)</text>
+
+                 <path id="h-f-backprop" d="M 360 190 Q 250 150 150 250" fill="none" class="arrow backprop-arrow" marker-end="url(#arrow-backprop)"></path>
+                 <path id="h-f-backprop2" d="M 360 510 Q 250 550 150 450" fill="none" class="arrow backprop-arrow" marker-end="url(#arrow-backprop)"></path>
+
+            </g>
+
+        </svg>
+    </div>
+</body>
+</html>

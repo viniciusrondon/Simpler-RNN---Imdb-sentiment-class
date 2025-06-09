@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keras RNN Model Architecture (Vertical)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 3rem;
+            font-weight: 700;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* General Styles */
+        .layer-rect {
+            stroke: #495057;
+            stroke-width: 2;
+            fill: #f8f9fa;
+            rx: 8;
+            ry: 8;
+        }
+        .layer-label {
+            font-size: 18px;
+            font-weight: 700;
+            fill: #212529;
+            text-anchor: middle;
+        }
+        .param-label {
+            font-size: 14px;
+            font-weight: 400;
+            fill: #495057;
+            text-anchor: middle;
+        }
+        .shape-label {
+            font-size: 15px;
+            font-weight: 500;
+            font-style: italic;
+            fill: #0077b6;
+            text-anchor: middle;
+        }
+        .arrow {
+            stroke-width: 2.5;
+            stroke: #0077b6;
+            fill: none;
+        }
+        .marker-arrow {
+            fill: #0077b6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Arquitetura Ilustrativa do Modelo RNN</h1>
+        <svg viewBox="0 0 500 1450">
+            <!-- Definitions for Arrowheads -->
+            <defs>
+                <marker id="arrow-main" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" class="marker-arrow" />
+                </marker>
+            </defs>
+
+            <!-- Input -->
+            <g id="input-group">
+                <rect x="150" y="50" width="200" height="100" class="layer-rect" fill="#e9ecef"/>
+                <text x="250" y="90" class="layer-label">Input</text>
+                <text x="250" y="115" class="param-label">Sequence of tokens</text>
+            </g>
+            <path d="M 250 150 V 200" class="arrow" marker-end="url(#arrow-main)"/>
+
+
+            <!-- Embedding Layer -->
+            <g id="embedding-layer">
+                <rect x="125" y="200" width="250" height="100" class="layer-rect" />
+                <text x="250" y="235" class="layer-label">Embedding</text>
+                <text x="250" y="260" class="param-label">max_features</text>
+                <text x="250" y="280" class="param-label">input_length=500</text>
+            </g>
+            <path d="M 250 300 V 350" class="arrow" marker-end="url(#arrow-main)"/>
+
+            <!-- RNN 1 -->
+            <g id="rnn1-layer">
+                <rect x="100" y="350" width="300" height="110" class="layer-rect" />
+                <text x="250" y="380" class="layer-label">SimpleRNN 1</text>
+                <text x="250" y="405" class="param-label">128 units, activation='relu'</text>
+                <text x="250" y="425" class="param-label">return_sequences=True</text>
+            </g>
+            <path d="M 250 460 V 510" class="arrow" marker-end="url(#arrow-main)"/>
+
+            <!-- RNN 2 -->
+             <g id="rnn2-layer">
+                <rect x="100" y="510" width="300" height="110" class="layer-rect" />
+                <text x="250" y="540" class="layer-label">SimpleRNN 2</text>
+                <text x="250" y="565" class="param-label">128 units, activation='relu'</text>
+                <text x="250" y="585" class="param-label">return_sequences=False</text>
+            </g>
+            <path d="M 250 620 V 670" class="arrow" marker-end="url(#arrow-main)"/>
+
+            <!-- Dense Layer -->
+            <g id="dense-layer">
+                <rect x="125" y="670" width="250" height="100" class="layer-rect" />
+                <text x="250" y="700" class="layer-label">Dense Layer</text>
+                <text x="250" y="725" class="param-label">1 unit, activation='sigmoid'</text>
+            <path d="M 250 770 V 830" class="arrow" marker-end="url(#arrow-main)"/>
+
+            <!-- Final Output -->
+            <g id="output-group">
+                <rect x="150" y="830" width="200" height="100" class="layer-rect" />
+                <text x="250" y="870" class="layer-label">Output</text>
+                <text x="250" y="895" class="param-label">Binary Classification</text>
+                <text x="250" y="915" class="param-label">(Probability)</text>
+            </g>
+            </g>
+        </svg>
+    </div>
+</body>
+</html>
